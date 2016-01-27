@@ -209,16 +209,221 @@ winnings(21, 12)</pre>
 
 </article></slide><slide class=''><hgroup><h2>21 點玩法</h2></hgroup><article  id="-6">
 
-<ul class = 'build'>
-<li><p>Shoe：牌盒，1 Shoe 就是一條牌。</p></li>
-<li><p>Hit：要牌。手勢動作是點桌子，莊家會發牌給你以增加你的手牌點數 ，你可以一直要牌直到爆牌（Bust）為止。</p></li>
-<li><p>Stand：停牌。就是不要牌了。手勢是橫向擺動或是直接搖手表示不要牌了。</p></li>
-<li><p>Surrender：投降（輸一半）。手勢是單一手指在桌上橫劃一次。</p></li>
-<li><p>Split：分牌，只要你拿到兩張一樣點數的牌，就可以分牌，將兩張一樣點數的牌分成兩手牌，10 點跟 J/Q/K 不一樣花色也都算10點牌也可以分。手勢是對著莊家作出 <code>V</code> 字手勢。</p></li>
-<li><p>Double：加倍，就是多放一倍的籌碼，但是只能再要一張牌。手勢通常對著莊家比 <code>1</code> 的手勢代表只要一張牌。</p></li>
+<pre class = 'prettyprint lang-r'>test_cards = list( c(10, 1), c(10, 5, 6), c(10, 1, 1), 
+                   c(7, 6, 1, 5), c(3, 6, 1, 1), 
+                   c(2, 3, 4, 10), c(5, 1, 9, 1, 1),
+                   c(5, 10, 7), c(10, 9, 1, 1, 1))
+test_cards_val = c(21.5, 21, 12, 19, 21, 19, 17, 0, 0)
+identical(test_cards_val, sapply(test_cards, handValue))</pre>
+
+<pre >## [1] TRUE</pre>
+
+</article></slide><slide class=''><hgroup><h2>21 點玩法</h2></hgroup><article  id="-7">
+
+<ul>
+<li>Shoe：牌盒，1 Shoe 就是一條牌。</li>
 </ul>
 
-</article></slide><slide class=''><hgroup><h2></h2></hgroup><article >
+<pre class = 'prettyprint lang-r'>shoe = function(m = 1) sample(deck, m, replace = TRUE)
+new_hand = function(shoe, cards = shoe(2), bet = 1) {
+  list(bet = bet, shoe = shoe, cards = cards)
+}
+new_hand = function(shoe, cards = shoe(2), bet = 1, ...) {
+  structure(list(bet = bet, shoe = shoe, cards = cards), 
+            class = &quot;hand&quot;)
+}
+print.hand = function(x, ...) {
+  cat(&quot;Blackjack hand: &quot;, paste(x$cards, collapse = &quot;-&quot;), 
+      &quot; (&quot;, handValue(x$cards), &quot;).  Bet: &quot;, x$bet, 
+      &quot;\n&quot;, sep = &quot;&quot;)
+}</pre>
+
+</article></slide><slide class=''><hgroup><h2>21 點玩法</h2></hgroup><article  id="-8">
+
+<ul>
+<li>Hit：要牌。莊家會發牌給你以增加你的手牌點數 ，你可以一直要牌直到爆牌（Bust）為止。</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>myCards = new_hand(shoe, bet = 7)
+myCards</pre>
+
+<pre >## Blackjack hand: 1-9 (20).  Bet: 7</pre>
+
+<pre class = 'prettyprint lang-r'>hit = function(hand) {
+  hand$cards = c(hand$cards, hand$shoe(1))
+  hand
+}
+hit(myCards)</pre>
+
+<pre >## Blackjack hand: 1-9-6 (16).  Bet: 7</pre>
+
+</article></slide><slide class=''><hgroup><h2>21 點玩法</h2></hgroup><article  id="-9">
+
+<ul>
+<li>Stand：停牌。就是不要牌了。</li>
+</ul>
+
+<ul>
+<li>Double：加倍，就是多放一倍的籌碼，但是只能再要一張牌。</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>stand = function(hand) hand
+dd =  function(hand) {
+  hand$bet = hand$bet * 2
+  hand = hit(hand)
+  stand(hand)
+}
+dd(myCards)</pre>
+
+<pre >## Blackjack hand: 1-9-10 (20).  Bet: 14</pre>
+
+</article></slide><slide class=''><hgroup><h2>21 點玩法</h2></hgroup><article  id="-10">
+
+<ul>
+<li>Split：分牌，只要你拿到兩張一樣點數的牌，就可以分牌，將兩張一樣點數的牌分成兩手牌，10 點跟 J/Q/K 不一樣花色也都算10點牌也可以分。</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>splitPair = function(hand) {
+  list(
+    new_hand(hand$shoe, cards = c(hand$cards[1], hand$shoe(1)), 
+             bet = hand$bet),
+    new_hand(hand$shoe, cards = c(hand$cards[2], hand$shoe(1)),
+             bet = hand$bet)
+  )
+}
+splitHand = splitPair(myCards); splitHand</pre>
+
+<pre >## [[1]]
+## Blackjack hand: 1-3 (14).  Bet: 7
+## 
+## [[2]]
+## Blackjack hand: 9-3 (12).  Bet: 7</pre>
+
+</article></slide><slide class='segue dark nobackground'><hgroup class = 'auto-fadein'><h2>Let&#39;s play a game！</h2></hgroup><article  id="lets-play-a-game">
+
+<img src='http://cdn.meme.am/instances/500x/55583077.jpg' title=''/>
+
+</article></slide><slide class=''><hgroup><h2>21 點對戰</h2></hgroup><article >
+
+<pre class = 'prettyprint lang-r'>set.seed(1014)
+dealer = new_hand(shoe)
+player = new_hand(shoe)
+dealer$cards[1]</pre>
+
+<pre >## [1] 5</pre>
+
+<pre class = 'prettyprint lang-r'>player</pre>
+
+<pre >## Blackjack hand: 6-9 (15).  Bet: 1</pre>
+
+<pre class = 'prettyprint lang-r'>player = hit(player)
+player</pre>
+
+<pre >## Blackjack hand: 6-9-1 (16).  Bet: 1</pre>
+
+<pre class = 'prettyprint lang-r'>dealer</pre>
+
+<pre >## Blackjack hand: 5-5 (10).  Bet: 1</pre>
+
+<pre class = 'prettyprint lang-r'>dealer = hit(dealer)
+dealer</pre>
+
+<pre >## Blackjack hand: 5-5-10 (20).  Bet: 1</pre>
+
+<pre class = 'prettyprint lang-r'>winnings(handValue(dealer$cards), handValue(player$cards))</pre>
+
+<pre >## [1] -1</pre>
+
+</article></slide><slide class='segue dark nobackground'><hgroup class = 'auto-fadein'><h2>我好想贏韓國⋯⋯</h2></hgroup><article >
+
+</article></slide><slide class=''><hgroup><h2>21 點策略</h2></hgroup><article >
+
+<ul>
+<li>有ＢＵＧ！</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>strategy_simple = function(mine, dealerFaceUp) {
+  if (handValue(dealerFaceUp) &gt; 6 &amp;&amp; handValue(mine) &lt; 17) 
+    &quot;H&quot; 
+  else 
+    &quot;S&quot;
+}</pre>
+
+<ul class = 'build'>
+<li>抓抓看？</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>21 點策略</h2></hgroup><article  id="-1">
+
+<pre class = 'prettyprint lang-r'>strategy_simple = function(mine, dealerFaceUp) {
+  if (handValue(mine) == 0) return(&quot;S&quot;)
+  if (handValue(dealerFaceUp) &gt; 6 &amp;&amp; handValue(mine) &lt; 17) 
+    &quot;H&quot; 
+  else 
+    &quot;S&quot;
+}</pre>
+
+</article></slide><slide class=''><hgroup><h2>21 點策略</h2></hgroup><article  id="-2">
+
+<pre class = 'prettyprint lang-r'>dealer_cards = function(shoe) {
+  cards = shoe(2)
+  while(handValue(cards) &lt; 17 &amp;&amp; handValue(cards) &gt; 0) {
+    cards = c(cards, shoe(1))
+  }
+  cards
+}</pre>
+
+<ul>
+<li>莊家怎麼出牌？</li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>21 點實戰</h2></hgroup><article >
+
+<pre class = 'prettyprint lang-r'>play_hand = function(shoe, strategy, hand = new_hand(shoe), 
+                     dealer = dealer_cards(shoe)) {
+  face_up_card = dealer[1]
+  action = strategy(hand$cards, face_up_card)
+  while(action != &quot;S&quot; &amp;&amp; handValue(hand$cards) != 0) {
+    if (action == &quot;H&quot;) {
+      hand = hit(hand); action = strategy(hand$cards, face_card)
+    } else if (action == &quot;D&quot;) {
+      hand = dd(hand); action = &quot;S&quot;
+    } else {
+      stop(&quot;Unknown action: should be one of S, H, D, SP&quot;)
+    }
+  }  
+  winnings(handValue(dealer), handValue(hand$cards)) * hand$bet
+}</pre>
+
+</article></slide><slide class=''><hgroup><h2>21 點實戰</h2></hgroup><article  id="-1">
+
+<ul>
+<li>利用我們的簡單策略玩一場 21 點吧！</li>
+</ul>
+
+<pre class = 'prettyprint lang-r'>set.seed(1014)
+play_hand(shoe, strategy_simple)</pre>
+
+<pre >## [1] 1.5</pre>
+
+</article></slide><slide class='segue dark nobackground'><hgroup class = 'auto-fadein'><h2>怎麼改進？</h2></hgroup><article >
+
+</article></slide><slide class=''><hgroup><h2>更貼近真實的 21 點牌局</h2></hgroup><article  id="-21-">
+
+<ul class = 'build'>
+<li><p>加規則：分牌</p></li>
+<li><p>加規則：加倍</p></li>
+<li><p>加策略？</p></li>
+<li><p>更多模擬？</p></li>
+</ul>
+
+</article></slide><slide class=''><hgroup><h2>Ｑ＆Ａ</h2></hgroup><article >
+
+<h3>對於以上內容，有任何問題嗎？</h3>
+
+<h3>也可以在<a href='https://hackpad.com/HF6ivFssLp4' title=''>共筆</a>發問喔！</h3>
+
+<h3>如果對Ｒ有興趣，也可以到我們的<a href='http://data-sci.info/' title=''>論壇</a>尋找更多資訊。</h3>
 
 </article></slide><slide class=''><hgroup><h2>參考資料</h2></hgroup><article  class="smaller">
 
