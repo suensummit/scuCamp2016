@@ -10,6 +10,18 @@ output:
     css: main.css
 ---
 
+## 孫玉峰｜Summit Suen {.columns-2}
+
+![](https://scontent-tpe1-1.xx.fbcdn.net/hphotos-xpt1/v/t1.0-9/12219353_10207791457767376_4032212882967287236_n.jpg?oh=38b051b95f4597cc7fa1847b80c5be1e&oe=56FCA390)
+
+### 課程經理／講師＠木刻思
+
+### Taiwan R User Group Co-Organizer
+
+### 學術 => 業界
+
+### 相信資料跟數學會改變世界
+
 ## 現在對於資料科學的面貌，有沒有更瞭解了呢？ {.flexbox .vcenter}
 
 - 資料科學`「不等於」`大數據
@@ -26,24 +38,22 @@ output:
 
 ![](img/giphy.gif) 
 
-# Data-Driven 以資料輔助決策
+# 數據驅動－以資料輔助決策
 
 ## {.fullpage}
 
 ![](img/akinator.png) 
 
-# 說到決策樹之前 -- 來談談條件機率
+# 說到決策樹之前－來談談條件機率
 
-## 機率與條件機率
+## 機率與條件機率 {.columns-2}
 
-<div class="columns-2">
 ![](http://www.astro.ucla.edu/~wright/statistics/bayes.gif)
 
 - 事件Ａ發生的機率 = `P(A)`
 - 事件Ｂ發生的機率 = `P(B)`
 - 事件Ａ與Ｂ同時發生的機率 = `P(A & B)`
 - 事件Ｂ發生時，事件Ａ發生的機率 = `P(A|B) = P(A & B) / P(B)`
-</div>
 
 # 再回來看「擲筊」這件事
 
@@ -141,19 +151,19 @@ __|
 
 ```{r, eval=FALSE}
 "
-                            __P(D |A ) = 0.80__ [D ] => P(D & A )
+                            __P(D |A ) = 0.80__ [D ] => P(D , A )
    __P(A ) = 0.60__ [A ] __/
-  /                        \__P(D'|A ) = 0.20__ [D'] => P(D'& A )
+  /                        \__P(D'|A ) = 0.20__ [D'] => P(D', A )
 __|
-  |                         __P(D |A') = 0.25__ [D ] => P(D & A')
+  |                         __P(D |A') = 0.25__ [D ] => P(D , A')
   \__P(A') = 0.40__ [A'] __/
-                           \__P(D'|A') = 0.75__ [D'] => P(D'& A')
+                           \__P(D'|A') = 0.75__ [D'] => P(D', A')
 "
 ```
 
-- 則銷量成長兩倍的機率為 `P(D ) = P(D & A ) + P(D & A') = 0.60 × 0.80 + 0.40 × 0.25 = 0.48 + 0.10 = 0.58`。
+- 則銷量成長兩倍的機率為 `P(D ) = P(D , A ) + P(D , A') = 0.60 × 0.80 + 0.40 × 0.25 = 0.48 + 0.10 = 0.58`。
 
-- 銷量不會成長兩倍的機率 `P(D') = P(D'& A ) + P(D'& A') = 0.60 × 0.20 + 0.40 × 0.75 = 0.12 + 0.30 = 0.42`。
+- 銷量不會成長兩倍的機率 `P(D') = P(D', A ) + P(D', A') = 0.60 × 0.20 + 0.40 × 0.75 = 0.12 + 0.30 = 0.42`。
 
 ## 情境題：食安風暴
 
@@ -179,13 +189,13 @@ __|
 
 ```{r, eval=FALSE}
 "
-                            __P(A |D )__ [A ] => P(D & A ) = 0.48
+                            __P(A |D )__ [A ] => P(D , A ) = 0.48
    __P(D ) = 0.58__ [D ] __/
-  /                        \__P(A'|D )__ [A'] => P(D & A') = 0.10
+  /                        \__P(A'|D )__ [A'] => P(D , A') = 0.10
 __|
-  |                         __P(A |D')__ [A ] => P(D'& A ) = 0.12
+  |                         __P(A |D')__ [A ] => P(D', A ) = 0.12
   \__P(D') = 0.42__ [D'] __/
-                           \__P(A'|D')__ [A'] => P(D'& A') = 0.30
+                           \__P(A'|D')__ [A'] => P(D', A') = 0.30
 "
 ```
 
@@ -197,26 +207,233 @@ __|
 
 - `P(A'|D') = 0.30 / 0.42 = 0.714`
 
-## 簡單的決策樹
+## 決策樹的建構
 
-## 複雜的決策樹
+- 從`條件機率`建構
 
-# R
+- 分類樹：當結果可能為離散（例如三個種類的花，輸贏等）使用的概念。
 
-## R Basic
+- 回歸樹：當結果可能為實數（例如房價，患者住院時間等）使用的概念。
+
+- CART：Classification And Regression Trees
+
+- 從`資料`建構
+
+- 熵（Entropy） = 系統的凌亂程度，演算法 `ID3`, `C4.5` 和 `C5.0` 使用熵。可以視為是系統資訊量的度量。
+
+- ![](http://upload.wikimedia.org/math/7/e/0/7e07ecb22da81febc26057dabcc447a8.png)
+
+## 決策樹的實現 {.columns-2}
+
+![](img/cuSum.png)
+
+> - 117 筆紀錄，5 個變數欄位。
+
+> - 1990 年四月製造的車輛資料。
+
+> - Reliability：`Much worse` < `worse` < `average` < `better` < `Much better`。
+
+> - Mileage：每加侖可走里程數。
+
+- 想知道價格如何決定？
+
+## 決策樹的實現
 
 ```{r}
+library(rpart)
+fit <- rpart(Price ~ Mileage + Type + Country, cu.summary)
+par(xpd = TRUE); plot(fit, compress = TRUE); text(fit, use.n = TRUE)
 ```
 
-## R Basic
+# 暖身一下，準備來寫程式囉！
 
-```{r, echo=FALSE}
+## 談到資料科學－最熱門的程式語言 {.columns-2}
+
+![](http://www.kdnuggets.com/wp-content/uploads/r-vs-python-numbers.jpg)
+
+- 專門為資料分析設計的語言。
+
+- 免費、開源、豐富的社群資源。
+
+- 容易擴充並且與其他工具整合。
+
+- 強大的視覺化功能。
+
+## 環境設定＆介紹 {.columns-2}
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/videoseries?list=PLLSknrdOLKyExmSXobXQebQUg2kESYGIe" frameborder="0" allowfullscreen></iframe>
+
+- 主程式：[R](https://www.r-project.org/)（R-3.2.3 以上版本）
+- 編輯界面：[RStudio IDE](https://www.rstudio.com/products/rstudio/download/)（0.99.491 以上版本）
+
+## 環境設定＆介紹 {.columns-2}
+
+### 命令列區
+
+![](http://33.media.tumblr.com/01d8c52c8380588fe074fa8faf9c4804/tumblr_inline_mz7nk8bErU1s5wtly.png)
+
+程式的`輸入`、`輸出`、`中斷`
+
+- 當左下角的符號為 `>` 表示可以輸入指令。
+- 輸入 `1 + 1` 後按下 Enter，檢查螢幕輸出。
+- 輸入 `1 +` 後按下 Enter，檢查螢幕輸出。
+- 最左下角的開頭變成 `+` 表示尚未輸入完成，應繼續輸入。
+- 按下 ESC，會中斷執行中的程式 (左下角回復成 `>` 開頭)。
+
+## 環境設定＆介紹 {.columns-2}
+
+### 程式碼編輯區
+
+![](http://33.media.tumblr.com/db490d7638140a649074e8da85cf1cbe/tumblr_inline_mz7noiddbY1s5wtly.png)
+
+停留時間最多的區域
+
+- New File -> R Script -> Untiled1.R
+- 在程式碼編輯區中輸入 `1 + 1` 後按下 Control + Enter，檢查 `命令列區`。
+- 在程式碼編輯區中輸入 `1 +` 後按下 Control + Enter，檢查 `命令列區`。
+- 在命令列區按下 ESC 中斷程式。
+
+## 環境設定＆介紹 {.columns-2}
+
+### 檔案系統區（說明＆圖表）
+
+![](http://38.media.tumblr.com/66e0dcfb228fb3e9abd85578b9020d4e/tumblr_inline_mz7nkq82wq1s5wtly.png)
+
+### 環境資訊區
+
+![](http://33.media.tumblr.com/cc922f4d205021852a96df596beddef2/tumblr_inline_mz7nkiZG2B1s5wtly.png)
+
+## 基礎Ｒ語法
+
+### 敘述句
+
+```{r}
+1 + 1
+x <- 10
+y <- 4
+(x + y)/2
 ```
+
+## 基礎Ｒ語法
+
+### 向量（數列）
+
+```{r}
+c(1:4)
+1:4
+4:1
+```
+
+## 基礎Ｒ語法
+
+### 有序的數值向量
+
+```{r}
+seq(1:4)
+seq(1, 9, by = 2)
+seq(1, 10, length.out = 5)
+```
+
+## 基礎Ｒ語法
+
+### 向量運算（recycling properties）
+
+```{r}
+c(1, 2, 3) * c(2, 2, 2)
+1:3 * 2
+c(0.5, 1.5, 2.5, 3.5) * c(2, 1)
+```
+
+## 基礎Ｒ語法
+
+### 向量取值
+
+```{r}
+x <- c(174, 158, 160, 168, 173)
+x[1]
+x[c(1, 3)]     # 選取第1, 3個位置的元素
+```
+
+## 基礎Ｒ語法
+
+### 向量取值
+
+```{r}
+x[c(2, 3, 1)]  # 依序取值
+x[-1]          # 在[ ]中使用負號 (-) 做反向選取
+x > 160
+```
+
+## 基礎Ｒ語法
+
+### 向量取值
+
+```{r}
+index <- which(x > 160) # 使用比較運算子 加上 `which` 函數進行取值
+index
+x[index]
+x[which(x > 160)]
+```
+
+## 基礎Ｒ語法
+
+### 向量取代與新增
+
+```{r}
+# 利用 [ ] (中括號) 與 <- (箭號) 進行元素的取代與新增
+x <- c(174, 158, 160, 168, 173)
+x[c(1, 5)] <- 175
+x
+x[x > 160] <- 170
+x
+```
+
+## 基礎Ｒ語法
+
+### 向量取代與新增
+
+```{r}
+x <- c(174, 158, 160, 168, 173)
+x[6] <- 168
+x
+x[8] <- 147
+x # 未指定的元素值預設為NA
+```
+
+## 基礎Ｒ語法
+
+### 向量取代與新增
+
+```{r}
+length(x) # 查看向量物件的長度
+x[length(x) + 1] <- 166 # 接續增加新元素
+x
+```
+
+## 基礎Ｒ語法
+
+### 基礎字串處理
+
+```{r}
+x <- "scu"; y <- "taipei"; paste(x, y, sep=",") # 字串的剪接：paste
+strsplit(x, "c")                                # 字串的切割：strsplit
+name1 <- "東吳大學"; substring(name1, 1, 2)     # 截取子字串：substring
+```
+
+## Ｑ＆Ａ
+
+### 對於以上內容，有任何問題嗎？
+
+### 也可以在[共筆](https://hackpad.com/HF6ivFssLp4)發問喔！
+
+### 如果對Ｒ有興趣，也可以到我們的[論壇](http://data-sci.info/)尋找更多資訊。
 
 ## 參考資料 {.smaller}
 
 > - [圖片來源](http://bigsonata.com/lam-sao-de-tro-thanh-nha-khoa-hoc-du-lieu/)
 > - [圖片來源](http://www.astro.ucla.edu/~wright/statistics/)
 > - [【數學力】神啊！請給我一個聖筊](http://opinion.udn.com/opinion/story/8159/1317267-%E3%80%90%E6%95%B8%E5%AD%B8%E5%8A%9B%E3%80%91%E7%A5%9E%E5%95%8A%EF%BC%81%E8%AB%8B%E7%B5%A6%E6%88%91%E4%B8%80%E5%80%8B%E8%81%96%E7%AD%8A)
-> - [資料科學愛好者年會 2014 R Tutorial](https://github.com/TaiwanRUserGroup/DSC2014Tutorial)
-> - [資料科學愛好者年會 2015 R Tutorial](https://github.com/TaiwanRUserGroup/DSC2015Tutorial)
+> - [台灣資料科學愛好者年會 2014 R Tutorial](https://github.com/TaiwanRUserGroup/DSC2014Tutorial)
+> - [台灣資料科學愛好者年會 2015 R Tutorial](https://github.com/TaiwanRUserGroup/DSC2015Tutorial)
+> - [Mini R Workshop](http://suensummit.github.io/miniRWorkshop-201511/)
+> - [TryR](http://tryr.codeschool.com/)
