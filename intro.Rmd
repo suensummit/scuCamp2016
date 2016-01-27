@@ -241,8 +241,9 @@ __|
 
 ```{r}
 library(rpart)
+library(rpart.plot)
 fit <- rpart(Price ~ Mileage + Type + Country, cu.summary)
-par(xpd = TRUE); plot(fit, compress = TRUE); text(fit, use.n = TRUE)
+par(xpd = TRUE); rpart.plot(fit)
 ```
 
 # 暖身一下，準備來寫程式囉！
@@ -466,5 +467,6 @@ ggplot(data = totalRS, aes(x = yearID, y = RUN)) + stat_smooth() + geom_line()
 > - [【數學力】神啊！請給我一個聖筊](http://opinion.udn.com/opinion/story/8159/1317267-%E3%80%90%E6%95%B8%E5%AD%B8%E5%8A%9B%E3%80%91%E7%A5%9E%E5%95%8A%EF%BC%81%E8%AB%8B%E7%B5%A6%E6%88%91%E4%B8%80%E5%80%8B%E8%81%96%E7%AD%8A)
 > - [台灣資料科學愛好者年會 2014 R Tutorial](https://github.com/TaiwanRUserGroup/DSC2014Tutorial)
 > - [台灣資料科學愛好者年會 2015 R Tutorial](https://github.com/TaiwanRUserGroup/DSC2015Tutorial)
+> - [Ｒ資料分析上手課程 {閃電秀}｜R <3 Baseball](http://suensummit.github.io/lightning-DSC2015-R)
 > - [Mini R Workshop](http://suensummit.github.io/miniRWorkshop-201511/)
 > - [TryR](http://tryr.codeschool.com/)
