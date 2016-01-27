@@ -28,23 +28,99 @@ output:
 
 ![](http://upload.shuxuejia.com/image/20151022/dbdf49f1eb6d4d1b846080d9913d2b3b.JPEG)
 
-## 玩法 {.columns-2}
+## 21 點玩法 {.columns-2}
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/uhPVps4HtHw" frameborder="0" allowfullscreen></iframe>
 
-- 
+- Deck：就是一副 52 張的牌，四個花色各 13 張。
 
-## 名詞解釋
+- Jack、Queen 跟 King 這三張牌都算十點。
 
-- Deck : 一盒牌中有幾副牌，從1~8都有 ，6D就是這條牌盒中有6副完整的牌，當然萬一賭場作弊那就可能會多一點小牌少一點大牌了。
+- Ace 可以算 1 點也可以當 11 點（當手牌其他點數和小於 11 點時轉換）。
+
+- Bust：爆牌，當你的總點數超過 21 點就是爆牌。
+
+- Blackjack：兩張牌組成 21 點，意即一張 Ace + 10 點牌，這組合在牌桌上是最大的。
+
+## 21 點玩法
+
+```{r}
+deck = rep(c(1:10, 10, 10, 10), 4)
+deck
+shuffle_decks = function(n) sample(rep(deck, n))
+myFun = function(x) x+1
+myFun(2)
+```
+
+## 21 點玩法
+
+手牌點數計算方式：
+
+- 加總手上所有牌。
+
+- `0`：爆牌是最輸的，歸零計算。
+
+- `+10`：如果手上有 Ace 總和又小於 12 點，則 Ace 變成 11 點。
+
+- `+0.5`：兩張牌組成 21 點，比其他 21 點的組合都來得大。
+
+## 21 點玩法
+
+```{r}
+handValue = function(cards) {
+  value = sum(cards)
+  # Check for an Ace and change value if it doesn't bust
+  if (any(cards == 1) && value <= 11) 
+    value = value + 10
+  # Check bust (set to 0); check black jack (set to 21.5)
+  if(value > 21)  
+    0 
+  else if (value == 21 && length(cards) == 2)  
+    21.5 # Blackjack
+  else 
+    value
+}
+```
+
+## 21 點玩法
+
+```{r}
+winnings = function(dealer, players) {
+  if (dealer > 21) {
+    # Dealer has blackjack, ties players with blackjack
+    -1 * (players <= 21)
+  } else if (dealer == 0) {
+    # Dealer busts - all non-busted players win
+    1.5 * (players > 21) +
+      1 * (players <= 21 & players > 0) +
+      -1 * (players == 0) 
+  } else {
+    # Dealer 21 or below, all player values > dealer win
+    1.5 * (players > 21) +  
+      1 * (players <= 21 & players > dealer) +
+      -1 * (players <= 21 & players < dealer) 
+  }
+}
+```
+
+## 21 點玩法
+
+```{r}
+winnings = function(dealer, players){
+  (players > dealer & players > 21) * 1.5 + # blackjack
+  (players > dealer & players <= 21) * 1 +  # win
+  (players < dealer | players == 0) * -1    # lose
+}
+winnings(21, 12)
+winnings(20, 21)
+winnings(21, 21.5)
+```
+
+----
 
 - Shoe : 牌盒，不是鞋子，1 Shoe 就是一條牌不是一隻鞋子。
 
-- Black Jack : 黑傑克(BJ)，就是一張Ace跟一張10點牌組成的天生21點，賭場賠1.5倍(3:2) ，有些美洲賭場只賠1.2倍(6:5) ，萬一遇到別打了快跑。
-
 - Hit : 要牌 ， 不是打人。 手勢動作是點桌子 ，莊家會發牌給你以增加你的手牌點數 ，你可以一直要牌直到爆牌(Bust)為止。
-
-- Bust : 爆牌 ，當你的總點數超過21點就是爆牌 ，不管裝家後面會不會爆牌你都已經輸了。所以有人堅持12點以上不要牌因為有機會爆牌 ，爆了就沒機會等裝家爆了 ，所以一定要"留的青山在"!這是個錯誤的策略因為莊家爆牌率僅約三成 ，只要不爆你沒有17點一定輸。所以"留著青山在"的策略只會讓你的青山多留約30秒 ，澳門荷官會讓她更短只要不到10秒。
 
 - Stand : 停牌 ，不是站著。 當要到硬17點以上你可以選擇停牌。很多人講成 Stay， 也通吧 ，總之就是不要牌了。手勢是橫向擺動或是直接搖手表示不要牌了。
 
@@ -55,8 +131,6 @@ output:
 - Double : 加倍 ， 就是多放一倍的籌碼 ，但是只能再要一張牌 ，通常對於勝算很高的手牌如11點都會多放錢進去以獲得更大的勝利。手勢通常對著莊家比"1"的手勢代表只要一張牌 ，也是任何手指都可以但是更避免用中指!!
 
 ----
-
-# 了解規則之後，讓我們來
 
 
 ## 參考資料 {.smaller}

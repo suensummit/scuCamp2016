@@ -420,6 +420,37 @@ strsplit(x, "c")                                # 字串的切割：strsplit
 name1 <- "東吳大學"; substring(name1, 1, 2)     # 截取子字串：substring
 ```
 
+## 不基礎Ｒ語法
+
+### 資料處理 `dplyr` ＋視覺化 `ggplot2`
+
+```{r}
+# install.packages("Lahman")
+# install.packages("ggplot2")
+# install.packages("dplyr")
+library(Lahman)
+library(ggplot2)
+library(dplyr)
+```
+
+## 不基礎Ｒ語法
+
+### 資料處理 `dplyr` ＋視覺化 `ggplot2`
+
+```{r}
+totalRS <- Teams %>% select(yearID, R, G) %>% mutate(AvgRperG = R/G) %>% group_by(yearID) %>% summarise(sum(AvgRperG))
+names(totalRS) <- c("yearID", "RUN")
+head(totalRS)
+```
+
+## 不基礎Ｒ語法
+
+### 資料處理 `dplyr` ＋視覺化 `ggplot2`
+
+```{r, fig.width=10, fig.height=4}
+ggplot(data = totalRS, aes(x = yearID, y = RUN)) + stat_smooth() + geom_line()
+```
+
 ## Ｑ＆Ａ
 
 ### 對於以上內容，有任何問題嗎？
